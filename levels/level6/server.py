@@ -68,8 +68,11 @@ def parse_headers(_reader):
     headers = []
     while True:
         line = _reader.readline()
-        # TODO: implement parsing headers
-        # HINT: use `parse_header_line` assist function
+
+        if line in (b'\r\n', b'\n', b''):
+            break
+
+        headers.append(parse_header_line(line))
 
     return headers
 
@@ -78,10 +81,11 @@ def parse_request_line(_reader):
     line = _reader.readline()
     if line == b'':  # nothing read from socket, it's probably closed
         raise ConnectionAbortedError
-    # TODO: parse the request line
-    if method not in HTTP_METHODS:
-        raise UnsupportedMethodError('Method not supported')
-    # return (method, path, protocol)
+    parts = line.split()
+    if len(parts) != 3:
+        logging.debug('request: {}'.format(line))
+        raise MalformedRequestError('Request line malformed')
+    return parts
 
 
 def parse_request(conn):

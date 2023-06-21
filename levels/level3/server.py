@@ -2,12 +2,15 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.1'
+
     def do_GET(self):
         body = '<html><body><p>Hello world</p></body></html>'.encode('utf-8')
         if self.path == '/':
-            # TODO: send a 200 OK response with body. Don't forget to set content headers
-            pass
-            # self.wfile.write() is your friend
+            self.send_response(200, 'OK')
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            self.wfile.write(body)
         else:
             self.send_response(404, 'Not found')
             # after sending the status line, we send headers

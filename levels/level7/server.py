@@ -103,20 +103,21 @@ def parse_request(conn):
     headers = parse_headers(buff)
 
     # presumably anything left in the headers buffer reader is part of the body so we concatenate
-    # if we just recv() more from the socket we might block, perhaps there isn't more to read?
-    # How do we know if a socket is closed?
     body_start = buff.read()
-    body = None
-
-    # TODO: read the rest of the body from the socket, concatenate it with body_start
-    # Don't forget Content-Length
+    # if we just recv() more from the socket we might block, perhaps there isn't more to read?
+    content_length = parse_content_length(headers)
+    if method_has_body(method) and content_length > 0:
+        body_rest = conn.recv(content_length)
+        body = BytesIO(body_start + body_rest)
+    else:
+        body = BytesIO(body_start)
 
     return {
         'headers': headers,
         'method': method,
         'path': path,
         'protocol': protocol,
-        'body': body
+        'body': body.read()
     }
 
 
@@ -140,7 +141,8 @@ def respond(conn, protocol, status_code, status_text, headers, body=None):
 
 def handle_request(conn):
     req = parse_request(conn)
-    respond(conn, req['protocol'], 200, 'OK', DEFAULT_RESPONSE_HEADERS + (('Content-Length', '0'),), '')
+    body = req['body']
+    respond(conn, req['protocol'], 200, 'OK', DEFAULT_RESPONSE_HEADERS + (('Content-Length', len(body)),), body)
     return req
 
 
@@ -154,7 +156,7 @@ def handle_connection(conn):
     except ConnectionAbortedError:
         logging.info('Connection aborted')
     except Exception as e:
-        logging.warn('Exception while handling request', exc_info=e)
+        logging.warning('Exception while handling request', exc_info=e)
     conn.close()
 
 

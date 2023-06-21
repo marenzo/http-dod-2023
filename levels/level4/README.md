@@ -1,6 +1,6 @@
 # Level 4: Caching
 For proper caching, the server needs to tell the client (or proxies along the way) if and how to cache the payload. This means we need to send the proper caching headers:
-- `Cache-Control` - various directives controling cache behavior. See the docs for more info
+- `Cache-Control` - various directives controlling cache behavior. See the docs for more info
 - `ETag` - a hash of the content
 - `Expires` - the date/time after which the response is considered stale
 - `Last-Modified` - the time when the body (content) was generated

@@ -183,7 +183,7 @@ def handle_connection(conn):
     except TimeoutError:
         logging.error('Connection timeout')
     except Exception as e:
-        logging.warn('Exception while handling request', exc_info=e)
+        logging.warning('Exception while handling request', exc_info=e)
     conn.close()
 
 

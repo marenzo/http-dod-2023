@@ -2,10 +2,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.1'
+
     def do_GET(self):
-        # TODO: redirect the browser to the DevOpsDays TLV website (https://devopsdays.org/events/2019-tel-aviv/welcome/)
         if self.path == '/redirect':
-            pass
+            self.send_response(302, 'Found')
+            self.send_header('Location', 'https://devopsdays.org/events/2023-amsterdam/welcome/')
         else:
             self.send_response(404, 'Not found')
 

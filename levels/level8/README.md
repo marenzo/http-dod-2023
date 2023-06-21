@@ -12,6 +12,8 @@ We'll need to read the `Connection` header, and behave according to the request 
 
 Note that since we implement a single threaded web server, new connections won't be able to process until the original connection is closed.
 
+Note 2: As of HTTP/2, the HTTP Connection header is no longer valid. Some browser implementations ignore the HTTP header whereas others will reject messages that contain it.
+
 ## Exercise
 - Implement the keep-alive behavior in the low-level server.py (search for TODO)
 

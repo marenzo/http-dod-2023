@@ -2,9 +2,11 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.1'
+
     def do_GET(self):
         if self.path == '/':
-            # TODO: return status code 200 OK
+            self.send_response(200, 'OK')
             pass
         else:
             self.send_response(404, 'Not found')

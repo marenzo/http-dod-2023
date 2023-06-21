@@ -9,6 +9,8 @@ allowed_domains = {
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.1'
+
     def do_GET(self):
         self.route()
 
@@ -19,24 +21,21 @@ class RequestHandler(BaseHTTPRequestHandler):
 
             self.send_response(200, 'OK')
             self.send_header('Content-Type', 'text/html; charset=utf-8')
-            self.send_header('Content-Length', len(body))
+            self.send_header('Content-Length', str(len(body)))
             self.send_header('Server', 'demo')
             self.end_headers()
             self.wfile.write(body)
         else:
-            # TODO: what happens if the domain is not allowed / Host header incorrect
-            raise Exception("Not implemented yet")
+            self.send_response(400, 'Bad Request')
+            self.end_headers()
 
     def is_domain_allowed(self):
-        # TODO: read Host header and match the domain
-        # Use: self.headers array to get header's value
-        # https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.headers
-
-        return True
+        hostname = self.headers['Host'].split(':')[0]
+        return hostname in allowed_domains.keys()
 
     def get_domain_content(self):
-        # TODO: read Host header and get the content
-        return ""
+        hostname = self.headers['Host'].split(':')[0]
+        return allowed_domains[hostname]
 
 
 server = HTTPServer(('', 8080), RequestHandler)
